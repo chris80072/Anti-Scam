@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Anti-Scam URL Checker",
+  "version": "0.0.1",
+  "description": "檢查當前網址是否安全，避免釣魚詐騙網站。",
+  "permissions": ["tabs", "storage", "activeTab", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/safe.png",
+      "48": "icons/safe.png",
+      "128": "icons/safe.png"
+    }
+  }
+}
