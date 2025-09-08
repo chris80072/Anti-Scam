@@ -4,13 +4,214 @@
   <meta charset="UTF-8">
   <title>Anti-Scam URL Checker</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 10px; width: 220px; }
-    #status { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      min-height: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .header {
+      padding: 16px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .header .subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .content {
+      padding: 16px;
+    }
+    
+    .status-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .status-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .status-icon {
+      font-size: 24px;
+      margin-right: 8px;
+    }
+    
+    .status-text {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .status-message {
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+    
+    .url-info {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .url-label {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .url-text {
+      font-size: 12px;
+      word-break: break-all;
+      font-family: 'Monaco', 'Menlo', monospace;
+    }
+    
+    .protocol-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .protocol-icon {
+      font-size: 14px;
+      margin-right: 6px;
+    }
+    
+    .protocol-text {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+    }
+    
+    .btn-primary:hover {
+      background: white;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .footer {
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.6;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
 <body>
-  <div id="status">檢查中...</div>
-  <div id="message"></div>
+  <div class="header">
+    <h1>🛡️ Anti-Scam</h1>
+    <div class="subtitle">網站安全檢查工具</div>
+  </div>
+  
+  <div class="content">
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <div>檢查中...</div>
+    </div>
+    
+    <div id="main-content" style="display: none;">
+      <div class="status-card">
+        <div class="status-header">
+          <div id="status-icon" class="status-icon">🔄</div>
+          <div id="status-text" class="status-text">檢查中</div>
+        </div>
+        <div id="status-message" class="status-message"></div>
+      </div>
+      
+      <div class="url-info">
+        <div class="url-label">當前網址</div>
+        <div id="current-url" class="url-text"></div>
+        <div class="protocol-info">
+          <div id="protocol-icon" class="protocol-icon">🔒</div>
+          <div id="protocol-text" class="protocol-text"></div>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button id="refresh-btn" class="btn">🔄 重新檢查</button>
+        <button id="settings-btn" class="btn btn-primary">⚙️ 設定</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div>版本 0.0.1 | 保持警覺，安全上網</div>
+  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>

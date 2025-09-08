@@ -76,3 +76,12 @@ async function showOverlayNotification(tabId, result) {
     console.log("無法顯示 overlay:", error.message);
   }
 }
+
+// 監聽來自 popup 的重新檢查請求
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "recheck" && request.url) {
+    const result = checkUrl(request.url);
+    chrome.storage.local.set({ lastCheck: result });
+    sendResponse({ success: true, result: result });
+  }
+});
