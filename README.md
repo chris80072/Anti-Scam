@@ -116,6 +116,19 @@ Anti-Scam/
 - **Message Passing**：高效的腳本間通訊機制
 - **Responsive Design**：適配不同螢幕尺寸的現代化 UI
 
+## 💖 贊助支持
+
+如果這個專案對你有幫助，歡迎贊助支持開發：
+
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-chris80072-pink?style=for-the-badge&logo=github)](https://github.com/sponsors/chris80072)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-chris80072-yellow?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/chris80072)
+
+你的支持將幫助我：
+- 🚀 持續開發新功能
+- 🐛 修復問題和改進
+- 📚 維護文檔和範例
+- 🔒 提升安全性檢測能力
+
 ## 🤝 貢獻指南
 
 歡迎協助改善此專案：
