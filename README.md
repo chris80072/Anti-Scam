@@ -31,10 +31,6 @@ antiscam/
 ├── background.js          # 背景腳本，處理網址檢查邏輯
 ├── popup.html            # 彈出視窗 HTML
 ├── popup.js              # 彈出視窗 JavaScript
-├── icons/                # 圖示資源
-│   ├── safe.png          # 安全狀態圖示
-│   ├── warning.png       # 警告狀態圖示
-│   └── danger.png        # 危險狀態圖示
 └── README.md             # 專案說明文件
 ```
 
