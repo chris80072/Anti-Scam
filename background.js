@@ -1,6 +1,5 @@
-// 簡單的白名單 & 黑名單
-const whitelist = ["t-cat.com.tw", "post.gov.tw", "shopee.tw", "chatgpt.com"];
-const blacklist = ["blackcat-delivery.xyz", "post-tw-logistics.top"];
+// 引入白名單和黑名單
+importScripts("whitelist.js", "blacklist.js");
 
 function checkUrl(url) {
   try {

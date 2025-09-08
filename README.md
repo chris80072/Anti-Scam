@@ -37,6 +37,8 @@ Anti-Scam/
 ├── content-script.js      # 內容腳本，處理 overlay 顯示
 ├── popup.html            # 彈出視窗 HTML
 ├── popup.js              # 彈出視窗 JavaScript
+├── whitelist.js          # 白名單 - 安全網站清單
+├── blacklist.js          # 黑名單 - 詐騙網站清單
 ├── icons/                # 圖示資料夾
 │   ├── safe.png          # 安全狀態圖示
 │   ├── warning.png       # 警告狀態圖示
@@ -60,10 +62,14 @@ Anti-Scam/
    - 提醒避免輸入敏感資訊
 
 2. **白名單檢查**：驗證已知的安全官方網站
+   - 包含政府機關、銀行、電信、電商等知名網站
    - 白名單網站不會顯示 overlay 通知
+   - 清單維護在 `whitelist.js` 檔案中
 
 3. **黑名單檢查**：識別已知的詐騙網站
+   - 包含假冒物流、銀行、電商、政府機關等詐騙網站
    - 立即顯示高風險警告
+   - 清單維護在 `blacklist.js` 檔案中
 
 4. **啟發式檢查**：基於網域名稱特徵判斷
    - 網域名稱過長（超過 30 字元）
