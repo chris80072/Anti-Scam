@@ -25,10 +25,28 @@
       backdrop-filter: blur(10px);
     }
     
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    
+    .logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
     .header h1 {
       font-size: 16px;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin: 0;
     }
     
     .header .subtitle {
@@ -173,7 +191,10 @@
 </head>
 <body>
   <div class="header">
-    <h1>🛡️ Anti-Scam</h1>
+    <div class="logo-container">
+      <img src="images/logo_48x48.png" alt="Anti-Scam Logo" class="logo">
+      <h1>Anti-Scam</h1>
+    </div>
     <div class="subtitle">網站安全檢查工具</div>
   </div>
   
