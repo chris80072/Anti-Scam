@@ -7,11 +7,20 @@ function checkUrl(url) {
     const parsed = new URL(url);
     const domain = parsed.hostname;
 
-    if (whitelist.some(w => domain.includes(w))) {
+    // 檢查是否為 HTTP（非 HTTPS）
+    if (parsed.protocol === "http:") {
+      return {
+        status: "warning",
+        message:
+          "⚠️ 此網站使用 HTTP 連線，資料傳輸未加密！請避免在此網站輸入個人資料、密碼或信用卡資訊。建議使用 HTTPS 版本。",
+      };
+    }
+
+    if (whitelist.some((w) => domain.includes(w))) {
       return { status: "safe", message: "這是官方網站 ✅" };
     }
 
-    if (blacklist.some(b => domain.includes(b))) {
+    if (blacklist.some((b) => domain.includes(b))) {
       return { status: "danger", message: "⚠ 高風險網站，可能是假冒詐騙！" };
     }
 
@@ -31,5 +40,39 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
     const result = checkUrl(tab.url);
     chrome.storage.local.set({ lastCheck: result });
+
+    // 只有非安全狀態才顯示 overlay 通知
+    if (result.status !== "safe") {
+      showOverlayNotification(tabId, result);
+    }
   }
 });
+
+// 顯示 overlay 通知
+async function showOverlayNotification(tabId, result) {
+  try {
+    // 檢查是否為 HTTP/HTTPS 網頁
+    const tab = await chrome.tabs.get(tabId);
+    if (
+      !tab.url ||
+      (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))
+    ) {
+      return;
+    }
+
+    // 注入 content script 並顯示通知
+    await chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["content-script.js"],
+    });
+
+    // 發送訊息給 content script
+    chrome.tabs.sendMessage(tabId, {
+      action: "showOverlay",
+      data: result,
+    });
+  } catch (error) {
+    // 忽略錯誤（例如無法注入到某些頁面）
+    console.log("無法顯示 overlay:", error.message);
+  }
+}

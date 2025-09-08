@@ -4,6 +4,13 @@
   "version": "0.0.1",
   "description": "檢查當前網址是否安全，避免釣魚詐騙網站。",
   "permissions": ["tabs", "storage", "activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_end"
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },
