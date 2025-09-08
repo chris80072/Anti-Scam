@@ -1,50 +1,52 @@
 // Content Script - 注入到網頁中顯示 overlay
-class AntiScamOverlay {
-  constructor() {
-    this.overlay = null;
-    this.isVisible = false;
-    this.init();
-  }
-
-  init() {
-    // 監聽來自 background script 的訊息
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.action === "showOverlay") {
-        this.showOverlay(request.data);
-      }
-    });
-  }
-
-  createOverlay(status, message) {
-    // 移除現有的 overlay
-    this.removeOverlay();
-
-    // 創建 overlay 元素
-    const overlay = document.createElement("div");
-    overlay.id = "anti-scam-overlay";
-    overlay.className = `anti-scam-overlay anti-scam-${status}`;
-
-    // 根據狀態設定樣式和圖示
-    let icon, bgColor, borderColor;
-    switch (status) {
-      case "safe":
-        icon = "✅";
-        bgColor = "#f0f9ff";
-        borderColor = "#10b981";
-        break;
-      case "warning":
-        icon = "⚠️";
-        bgColor = "#fffbeb";
-        borderColor = "#f59e0b";
-        break;
-      case "danger":
-        icon = "🚨";
-        bgColor = "#fef2f2";
-        borderColor = "#ef4444";
-        break;
+// 檢查是否已經存在，避免重複宣告
+if (typeof window.AntiScamOverlay === "undefined") {
+  window.AntiScamOverlay = class AntiScamOverlay {
+    constructor() {
+      this.overlay = null;
+      this.isVisible = false;
+      this.init();
     }
 
-    overlay.innerHTML = `
+    init() {
+      // 監聽來自 background script 的訊息
+      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === "showOverlay") {
+          this.showOverlay(request.data);
+        }
+      });
+    }
+
+    createOverlay(status, message) {
+      // 移除現有的 overlay
+      this.removeOverlay();
+
+      // 創建 overlay 元素
+      const overlay = document.createElement("div");
+      overlay.id = "anti-scam-overlay";
+      overlay.className = `anti-scam-overlay anti-scam-${status}`;
+
+      // 根據狀態設定樣式和圖示
+      let icon, bgColor, borderColor;
+      switch (status) {
+        case "safe":
+          icon = "✅";
+          bgColor = "#f0f9ff";
+          borderColor = "#10b981";
+          break;
+        case "warning":
+          icon = "⚠️";
+          bgColor = "#fffbeb";
+          borderColor = "#f59e0b";
+          break;
+        case "danger":
+          icon = "🚨";
+          bgColor = "#fef2f2";
+          borderColor = "#ef4444";
+          break;
+      }
+
+      overlay.innerHTML = `
       <div class="anti-scam-content">
         <div class="anti-scam-header">
           <span class="anti-scam-icon">${icon}</span>
@@ -58,8 +60,8 @@ class AntiScamOverlay {
       </div>
     `;
 
-    // 設定樣式
-    overlay.style.cssText = `
+      // 設定樣式
+      overlay.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
@@ -79,9 +81,9 @@ class AntiScamOverlay {
       word-wrap: break-word;
     `;
 
-    // 添加內部樣式
-    const style = document.createElement("style");
-    style.textContent = `
+      // 添加內部樣式
+      const style = document.createElement("style");
+      style.textContent = `
       .anti-scam-content {
         padding: 16px;
       }
@@ -129,54 +131,57 @@ class AntiScamOverlay {
       }
     `;
 
-    document.head.appendChild(style);
-    document.body.appendChild(overlay);
+      document.head.appendChild(style);
+      document.body.appendChild(overlay);
 
-    return overlay;
-  }
-
-  showOverlay(data) {
-    const { status, message } = data;
-
-    // 避免重複顯示
-    if (this.isVisible) {
-      this.removeOverlay();
+      return overlay;
     }
 
-    this.overlay = this.createOverlay(status, message);
-    this.isVisible = true;
+    showOverlay(data) {
+      const { status, message } = data;
 
-    // 動畫顯示
-    requestAnimationFrame(() => {
-      this.overlay.style.opacity = "1";
-      this.overlay.style.transform = "translateX(0)";
-    });
-
-    // 5 秒後自動隱藏
-    setTimeout(() => {
-      this.hideOverlay();
-    }, 5000);
-  }
-
-  hideOverlay() {
-    if (this.overlay && this.isVisible) {
-      this.overlay.style.opacity = "0";
-      this.overlay.style.transform = "translateX(100%)";
-
-      setTimeout(() => {
+      // 避免重複顯示
+      if (this.isVisible) {
         this.removeOverlay();
-      }, 300);
-    }
-  }
+      }
 
-  removeOverlay() {
-    if (this.overlay) {
-      this.overlay.remove();
-      this.overlay = null;
-      this.isVisible = false;
+      this.overlay = this.createOverlay(status, message);
+      this.isVisible = true;
+
+      // 動畫顯示
+      requestAnimationFrame(() => {
+        this.overlay.style.opacity = "1";
+        this.overlay.style.transform = "translateX(0)";
+      });
+
+      // 5 秒後自動隱藏
+      setTimeout(() => {
+        this.hideOverlay();
+      }, 5000);
     }
-  }
+
+    hideOverlay() {
+      if (this.overlay && this.isVisible) {
+        this.overlay.style.opacity = "0";
+        this.overlay.style.transform = "translateX(100%)";
+
+        setTimeout(() => {
+          this.removeOverlay();
+        }, 300);
+      }
+    }
+
+    removeOverlay() {
+      if (this.overlay) {
+        this.overlay.remove();
+        this.overlay = null;
+        this.isVisible = false;
+      }
+    }
+  };
 }
 
-// 初始化 overlay
-new AntiScamOverlay();
+// 初始化 overlay（如果尚未初始化）
+if (!window.antiScamOverlayInstance) {
+  window.antiScamOverlayInstance = new window.AntiScamOverlay();
+}

@@ -53,6 +53,7 @@ async function showOverlayNotification(tabId, result) {
   try {
     // 檢查是否為 HTTP/HTTPS 網頁
     const tab = await chrome.tabs.get(tabId);
+
     if (
       !tab.url ||
       (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))
@@ -60,17 +61,27 @@ async function showOverlayNotification(tabId, result) {
       return;
     }
 
-    // 注入 content script 並顯示通知
-    await chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["content-script.js"],
-    });
+    // 嘗試直接發送訊息給 content script
+    try {
+      chrome.tabs.sendMessage(tabId, {
+        action: "showOverlay",
+        data: result,
+      });
+    } catch (messageError) {
+      // 如果發送失敗，表示 content script 尚未載入，需要注入
+      await chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ["content-script.js"],
+      });
 
-    // 發送訊息給 content script
-    chrome.tabs.sendMessage(tabId, {
-      action: "showOverlay",
-      data: result,
-    });
+      // 等待一下讓 content script 初始化
+      setTimeout(() => {
+        chrome.tabs.sendMessage(tabId, {
+          action: "showOverlay",
+          data: result,
+        });
+      }, 500);
+    }
   } catch (error) {
     // 忽略錯誤（例如無法注入到某些頁面）
     console.log("無法顯示 overlay:", error.message);
